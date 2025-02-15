@@ -1,0 +1,14 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Packaging
+*.egg-info/
+
+# Virtual environment
+.venv/
+
+# Project files
+data/
+logs/
+runs/
+checkpoints/

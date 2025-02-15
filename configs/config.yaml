@@ -1,0 +1,9 @@
+seed: 42
+data_dir: "../data"
+val_ratio: 0.2
+image_size: 224
+num_classes: 3
+batch_size: 32
+num_epochs: 100
+learning_rate: 0.001
+log_dir: "../runs"
