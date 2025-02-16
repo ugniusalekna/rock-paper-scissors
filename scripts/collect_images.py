@@ -1,17 +1,14 @@
-#!/usr/bin/env python
-
 import os
 import argparse
 import cv2 as cv
 
-from rps.utils.capture import video_capture, crop_square, draw_text
+from mdlw.utils.capture import video_capture, crop_square, draw_text
 
 
 def parse_args():
     p = argparse.ArgumentParser()
     p.add_argument('--output_dir', type=str, default='./data')
     p.add_argument('--label', type=str, required=True)
-    p.add_argument('--start_idx', type=int, default=0)
     return p.parse_args()
 
 
@@ -40,7 +37,7 @@ def main():
             
             key = cv.waitKey(1) & 0xFF
             if key == ord('c'):
-                fname = os.path.join(label_dir, f"{args.label}_{args.start_idx+img_count:05d}.jpg")
+                fname = os.path.join(label_dir, f"{args.label}_{img_count:05d}.jpg")
                 cv.imwrite(fname, frame)
                 print(f"Captured: {fname}")
                 img_count += 1

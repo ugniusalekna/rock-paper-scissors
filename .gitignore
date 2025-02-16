@@ -8,7 +8,9 @@ __pycache__/
 .venv/
 
 # Project files
-data/
+data*/
 logs/
 runs/
-checkpoints/
+
+# Jupyter
+data_manip.ipynb

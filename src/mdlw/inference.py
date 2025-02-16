@@ -3,7 +3,7 @@ import numpy as np
 import onnxruntime as ort
 
 
-class RPSInference:
+class InferenceModel:
     def __init__(self, model_path, class_map):
         self.session = ort.InferenceSession(model_path)
         self.input_name = self.session.get_inputs()[0].name
@@ -24,7 +24,11 @@ class RPSInference:
         outputs = self.session.run([self.output_name], inputs)
         return np.argmax(outputs[0], axis=1)[0]
 
-    def predict(self, frame):
-        preprocessed_frame = self.preprocess(frame)
-        class_idx = self.forward(preprocessed_frame)
+    def predict(self, frame, return_prob=False):
+        frame = self.preprocess(frame)
+        outputs = self.session.run([self.output_name], {self.input_name: frame})
+        class_idx = np.argmax(outputs[0], axis=1)[0]
+        if return_prob:
+            probs = np.exp(outputs[0]) / np.sum(np.exp(outputs[0]), axis=1, keepdims=True)
+            return self.reverse_class_map[class_idx], probs[0]
         return self.reverse_class_map[class_idx]

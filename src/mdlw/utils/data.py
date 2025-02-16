@@ -1,13 +1,7 @@
 import os
 import random
-import yaml
 import numpy as np
 from PIL import Image
-
-
-def load_yaml(path):
-    with open(path, "r") as f:
-        return yaml.safe_load(f)
 
 
 def get_image_paths(root_dir, extensions=("jpg", "jpeg", "png")):
@@ -30,6 +24,10 @@ def get_cls_from_path(img_path):
 
 def make_class_map(root_dir):
     return {cls_name: idx for idx, cls_name in enumerate(os.listdir(root_dir))}
+
+
+def reverse_class_map(class_map):
+    return {v: k for k, v in class_map.items()}
 
 
 def train_val_split(img_paths, val_ratio=0.2, seed=None):

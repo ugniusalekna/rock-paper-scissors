@@ -1,7 +1,28 @@
 import os
 import random
+from types import SimpleNamespace
+import yaml
 import numpy as np
 import torch
+
+
+def load_yaml(path):
+    with open(path, "r") as f:
+        return yaml.safe_load(f)
+
+
+def dump_yaml(data, path):
+    with open(path, "w") as f:
+        yaml.safe_dump(data, f)
+
+
+def load_cfg(path):
+    cfg_dict = load_yaml(path)
+    return SimpleNamespace(**cfg_dict)
+
+
+def save_cfg(cfg, path):
+    dump_yaml(vars(cfg), path)
 
 
 def set_seed(seed):
@@ -24,6 +45,7 @@ def initialize_run_dir(log_dir):
             break
     
     os.makedirs(run_dir, exist_ok=True)
+    print(f"Initialized run directory: {run_dir}")
     return run_dir
 
 

@@ -1,10 +1,12 @@
+from tqdm import tqdm
 import torch
 
 
 class Trainer:
-    def __init__(self, model, optimizer, criterion, device, writer=None):
+    def __init__(self, model, optimizer, criterion, scheduler=None, device='cpu', writer=None):
         self.model = model
         self.optimizer = optimizer
+        self.scheduler = scheduler
         self.criterion = criterion
         self.device = device
         self.writer = writer
@@ -13,13 +15,16 @@ class Trainer:
         self.model.train()
         running_loss, running_corrects, total_samples = 0.0, 0, 0
 
-        for i, (img_batch, label_batch) in enumerate(dataloader):
+        for img_batch, label_batch in tqdm(dataloader, total=len(dataloader), desc=f"Epoch {epoch}", leave=False):
             img_batch, label_batch = img_batch.to(self.device), label_batch.to(self.device)
             self.optimizer.zero_grad()
             logit_batch = self.model(img_batch)
             loss = self.criterion(logit_batch, label_batch)
             loss.backward()
             self.optimizer.step()
+            
+            if self.scheduler:
+                self.scheduler.step()
 
             running_loss += loss.item()
             pred_batch = logit_batch.argmax(dim=1)
@@ -48,7 +53,7 @@ class Validator:
         running_loss, running_corrects, total_samples = 0.0, 0, 0
 
         with torch.no_grad():
-            for img_batch, label_batch in dataloader:
+            for img_batch, label_batch in tqdm(dataloader, total=len(dataloader), desc=f"Validation", leave=False):
                 img_batch, label_batch = img_batch.to(self.device), label_batch.to(self.device)
                 logit_batch = self.model(img_batch)
                 loss = self.criterion(logit_batch, label_batch)
@@ -65,3 +70,24 @@ class Validator:
             self.writer.add_scalar("Val/EpochAcc", avg_acc, epoch)
 
         return avg_loss, avg_acc
+
+
+class Exporter:
+    def __init__(self, model, imgsz, device):
+        self.model = model
+        self.imgsz = imgsz
+        self.device = device
+        
+    def export_onnx(self, onnx_path):
+        print("Exporting model...")
+        self.model.eval()
+        dummy_input = torch.randn(1, 3, self.imgsz, self.imgsz, device=self.device)
+        torch.onnx.export(
+            model=self.model, 
+            args=dummy_input, 
+            f=onnx_path,
+            input_names=["input"], 
+            output_names=["output"], 
+            opset_version=11
+        )
+        print(f"Model exported to {onnx_path}")
