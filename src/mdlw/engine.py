@@ -35,8 +35,8 @@ class Trainer:
         avg_acc = running_corrects / total_samples
         
         if self.writer:
-            self.writer.add_scalar("Train/EpochLoss", avg_loss, epoch)
-            self.writer.add_scalar("Train/EpochAcc", avg_acc, epoch)
+            self.writer.add_scalar("Train/Loss", avg_loss, epoch)
+            self.writer.add_scalar("Train/Accuracy", avg_acc, epoch)
             
         return avg_loss, avg_acc
 
@@ -66,8 +66,8 @@ class Validator:
         avg_acc = running_corrects / total_samples
         
         if self.writer:
-            self.writer.add_scalar("Val/EpochLoss", avg_loss, epoch)
-            self.writer.add_scalar("Val/EpochAcc", avg_acc, epoch)
+            self.writer.add_scalar("Val/Loss", avg_loss, epoch)
+            self.writer.add_scalar("Val/Accuracy", avg_acc, epoch)
 
         return avg_loss, avg_acc
 

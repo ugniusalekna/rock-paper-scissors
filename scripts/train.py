@@ -5,7 +5,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from mdlw.augment import Augmenter
 from mdlw.dataset import ImageDataset
-from mdlw.model import ImageClassifier
+from mdlw.model import ImageClassifier as ImageClassifier
 from mdlw.engine import Trainer, Validator, Exporter
 from mdlw.utils.data import get_image_paths, make_class_map, train_val_split
 from mdlw.utils.misc import load_cfg, get_device, initialize_run_dir, save_cfg
@@ -36,7 +36,8 @@ def main():
     device = get_device()
     model = ImageClassifier(num_classes=cfg.num_classes).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=cfg.learning_rate)
-    scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=cfg.learning_rate, steps_per_epoch=len(train_loader), epochs=cfg.num_epochs)
+    # scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=cfg.learning_rate, steps_per_epoch=len(train_loader), epochs=cfg.num_epochs)
+    scheduler = None
     loss_fn = torch.nn.CrossEntropyLoss()
 
     writer = SummaryWriter(log_dir=run_dir)
@@ -52,7 +53,7 @@ def main():
         
         if val_acc > best_val_acc:
             best_val_acc = val_acc
-            torch.save(model.state_dict(), f"{run_dir}/best_model.pt")
+            torch.save(model, f"{run_dir}/best_model.pt")
         
         pbar.set_postfix_str(f"Loss {train_loss:.4f}, Acc {train_acc:.4f}, Val Loss {val_loss:.4f}, Val Acc {val_acc:.4f}")
     

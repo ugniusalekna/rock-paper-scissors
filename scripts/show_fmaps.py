@@ -3,7 +3,6 @@ import torch
 import cv2 as cv
 import numpy as np
 
-from mdlw.model import ImageClassifier
 from mdlw.utils.capture import video_capture, draw_text, crop_square
 from mdlw.utils.data import make_class_map, reverse_class_map
 from mdlw.utils.fmaps import update_hooks, build_grid, preprocess, build_fc_composite
@@ -25,11 +24,9 @@ def main():
     reversed_map = reverse_class_map(class_map)
 
     device = get_device()
-    model = ImageClassifier(num_classes=cfg.num_classes).to(device)
+    model = torch.load(args.model_path, map_location=device)
     model.eval()
-    if args.model_path:
-        model.load_state_dict(torch.load(args.model_path, map_location=device, weights_only=True))
-    
+
     conv_layers = [name for name, _ in model.named_modules() if name.startswith("bn")]
     fc_layers = [name for name, _ in model.named_modules() if name.startswith("fc")]
 
@@ -73,26 +70,26 @@ def main():
                     break
             
             display, (pred, prob) = process(frame, reversed_map)
-            draw_text(display, text="Press 'n', 'p' to change layers, 'g' to toggle act, 'q' to quit.", font_scale=1.0)
+            draw_text(display, text="Press 'j', 'l' to change layers, 'k' to toggle act, 'q' to quit.", font_scale=1.0)
             draw_text(display, text=f"Prediction: {pred}: Probability: {prob:.2f}", font_scale=1.0, pos=(10, 80))
             cv.imshow("Feature visualization", display)
             
             key = cv.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
-            elif key == ord('n'):
+            elif key == ord('l'):
                 current_idx = (current_idx + 1) % len(layers)
                 current_layer = layers[current_idx]
                 hook_layers = fc_layers if current_layer == 'fc_all' else [current_layer]
                 update_hooks(model, activation, hook_layers)
-            elif key == ord('p'):
+            elif key == ord('j'):
                 current_idx = (current_idx - 1) % len(layers)
                 current_layer = layers[current_idx]
                 hook_layers = fc_layers if current_layer == 'fc_all' else [current_layer]
                 update_hooks(model, activation, hook_layers)
             elif key == ord(' '):
                 paused = not paused
-            elif key == ord('g'):
+            elif key == ord('k'):
                 use_act = not use_act
 
 

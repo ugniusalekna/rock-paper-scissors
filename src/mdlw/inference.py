@@ -12,7 +12,7 @@ class InferenceModel:
         self.image_size = self.input_shape[-2:]
         self.reverse_class_map = {v: k for k, v in class_map.items()}
 
-    def preprocess(self, frame): # Expects 1:1 aspect ratio
+    def preprocess(self, frame):
         frame = cv.resize(frame, self.image_size)
         frame = frame.astype(np.float32) / 255.0
         frame = np.transpose(frame, (2, 0, 1))
@@ -21,9 +21,9 @@ class InferenceModel:
     
     def predict(self, frame, return_prob=False):
         frame = self.preprocess(frame)
-        outputs = self.session.run([self.output_name], {self.input_name: frame})[0]
-        class_idx = np.argmax(outputs)
+        (logits,) = self.session.run([self.output_name], {self.input_name: frame})[0]
+        class_idx = np.argmax(logits)
         if return_prob:
-            probs = np.exp(outputs - np.max(outputs)) / np.sum(np.exp(outputs - np.max(outputs)))
+            probs = np.exp(logits - np.max(logits)) / np.sum(np.exp(logits - np.max(logits)))
             return self.reverse_class_map[class_idx], probs[class_idx]
         return self.reverse_class_map[class_idx]
