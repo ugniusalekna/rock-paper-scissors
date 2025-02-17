@@ -17,6 +17,7 @@ setup(
         "opencv-python",
         "pillow",
         "PyYAML",
+        "requests",
         "tensorboard",
         "torch",
         "torchvision",
