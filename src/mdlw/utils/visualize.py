@@ -37,7 +37,7 @@ def show_image(image, title=''):
     plt.show()
     
 
-def visualize_fmap(model, img, layer_name='conv1', device='cpu'):
+def visualize_fmap(model, img, layer_name='conv1', device='cpu', use_act=False):
     model.eval()
     activation = {}
     fc_layers = [name for name, _ in model.named_modules() if name.startswith("fc")]
@@ -49,10 +49,10 @@ def visualize_fmap(model, img, layer_name='conv1', device='cpu'):
             _ = model(image.unsqueeze(0).to(device))
 
         if layer_name.startswith('fc'):
-            vis = build_fc_composite(activation, fc_layers, image.shape[-1], image.shape[-2])
+            vis = build_fc_composite(activation, fc_layers, image.shape[-1], image.shape[-2], use_act=use_act)
         else:
             feat = activation[layer_name].squeeze(0)
-            vis = plt.cm.viridis(build_grid(feat))[:, :, :3]
+            vis = plt.cm.viridis(build_grid(feat, use_act=use_act))[:, :, :3]
             
         return img_np, vis
 
