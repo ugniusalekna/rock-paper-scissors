@@ -1,7 +1,8 @@
+import os
 from setuptools import setup, find_packages
 
 setup(
-    name='mini-dl-workflow',
+    name=os.path.basename(os.path.abspath(os.path.dirname(__file__))),
     version='0.1',
     packages=find_packages(where='src'),
     package_dir={'': 'src'},

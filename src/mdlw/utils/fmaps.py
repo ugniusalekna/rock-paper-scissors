@@ -26,7 +26,7 @@ def build_grid(feature_tensor, use_act=False):
             fmap = F.relu(fmap.clone())
 
         fmap_np = fmap.cpu().numpy()
-        fmap_np = (fmap_np - fmap_np.min()) / (fmap_np.ptp() + 1e-5) * 255
+        fmap_np = (fmap_np - fmap_np.min()) / (np.ptp(fmap_np) + 1e-5) * 255
         grid[row*h:(row+1)*h, col*w:(col+1)*w] = fmap_np.astype(np.uint8)
     
     return grid
@@ -50,7 +50,7 @@ def build_fc_composite(activation, fc_layers, gridsz, use_act=False):
                     fc_out = F.softmax(fc_out, dim=0)
 
             fc_np = fc_out.cpu().numpy()
-            fc_np = (fc_np - fc_np.min()) / (fc_np.ptp() + 1e-5) * 255
+            fc_np = (fc_np - fc_np.min()) / (np.ptp(fc_np) + 1e-5) * 255
             fc_np = fc_np.astype(np.uint8)
             stripe = cv.resize(fc_np[np.newaxis, :], (grid_w, stripe_height), interpolation=cv.INTER_NEAREST)
         stripe_colored = cv.applyColorMap(stripe, cv.COLORMAP_VIRIDIS)

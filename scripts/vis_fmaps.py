@@ -1,3 +1,5 @@
+import warnings
+warnings.simplefilter("ignore", FutureWarning)
 import argparse
 import torch
 import cv2 as cv
@@ -20,7 +22,7 @@ def parse_args():
 def init_model(args):
     cfg = load_cfg(path=args.config_path)
     device = get_device()
-    model = torch.load(args.model_path, map_location=device)
+    model = torch.load(args.model_path, map_location=device, weights_only=False)
     model.eval()
     class_map = make_class_map(cfg.data_dir)
     reversed_map = reverse_class_map(class_map)

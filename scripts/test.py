@@ -10,7 +10,7 @@ from mdlw.utils.capture import video_capture, crop_square, draw_text
 def parse_args():
     p = argparse.ArgumentParser()
     p.add_argument('--onnx_path', type=str, required=True)
-    p.add_argument('--data_dir', type=str, default='../data/cifar10')
+    p.add_argument('--data_dir', type=str, default='./data')
     p.add_argument('--mode', type=str, default='stream', choices=['stream', 'draw'])
     return p.parse_args()
 
