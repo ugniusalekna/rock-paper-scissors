@@ -1,6 +1,7 @@
 import math
 import cv2 as cv
 import numpy as np
+import torch.nn.functional as F
 import torchvision.transforms as T
 
 
@@ -10,7 +11,7 @@ def get_hook(activation, layer_name):
     return hook
 
 
-def build_grid(feature_tensor):
+def build_grid(feature_tensor, use_act=False):
     n, h, w = feature_tensor.shape
 
     grid_cols = math.ceil(math.sqrt(n))
@@ -20,6 +21,9 @@ def build_grid(feature_tensor):
     for idx in range(n):
         row, col = idx // grid_cols, idx % grid_cols
         fmap = feature_tensor[idx]
+        
+        if use_act:
+            fmap = F.relu(fmap.clone())
 
         fmap_np = fmap.cpu().numpy()
         fmap_np = (fmap_np - fmap_np.min()) / (fmap_np.ptp() + 1e-5) * 255
@@ -28,19 +32,27 @@ def build_grid(feature_tensor):
     return grid
 
 
-def build_fc_composite(activation, fc_layers, target_width, target_height):
+def build_fc_composite(activation, fc_layers, gridsz, use_act=False):
     stripes = []
-    stripe_height = target_height // len(fc_layers) if len(fc_layers) > 0 else target_height
+    grid_h, grid_w = gridsz
+    stripe_height = grid_h // len(fc_layers) if len(fc_layers) > 0 else grid_h
     
-    for name in fc_layers:
+    for i, name in enumerate(fc_layers):
         if name not in activation:
-            stripe = np.zeros((1, target_width), dtype=np.uint8)
+            stripe = np.zeros((1, grid_w), dtype=np.uint8)
         else:
             fc_out = activation[name].squeeze(0)
+            
+            if use_act:
+                if i < len(fc_layers) - 1:
+                    fc_out = F.relu(fc_out)
+                else:
+                    fc_out = F.softmax(fc_out, dim=0)
+
             fc_np = fc_out.cpu().numpy()
             fc_np = (fc_np - fc_np.min()) / (fc_np.ptp() + 1e-5) * 255
             fc_np = fc_np.astype(np.uint8)
-            stripe = cv.resize(fc_np[np.newaxis, :], (target_width, stripe_height), interpolation=cv.INTER_NEAREST)
+            stripe = cv.resize(fc_np[np.newaxis, :], (grid_w, stripe_height), interpolation=cv.INTER_NEAREST)
         stripe_colored = cv.applyColorMap(stripe, cv.COLORMAP_VIRIDIS)
         stripes.append(stripe_colored)
 

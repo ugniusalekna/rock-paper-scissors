@@ -88,6 +88,6 @@ class Exporter:
             f=onnx_path,
             input_names=["input"], 
             output_names=["output"], 
-            opset_version=11
+            opset_version=17
         )
         print(f"Model exported to {onnx_path}")

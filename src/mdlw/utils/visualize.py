@@ -42,24 +42,22 @@ def visualize_fmap(model, img, layer_name='conv1', device='cpu'):
     activation = {}
     fc_layers = [name for name, _ in model.named_modules() if name.startswith("fc")]
     img_np = img.permute(1, 2, 0).detach().cpu().numpy()
-
+    
     def forward(image):
         nonlocal activation, img_np
-        _ = model(image.unsqueeze(0).to(device))
+        with torch.no_grad():
+            _ = model(image.unsqueeze(0).to(device))
 
         if layer_name.startswith('fc'):
             vis = build_fc_composite(activation, fc_layers, image.shape[-1], image.shape[-2])
         else:
             feat = activation[layer_name].squeeze(0)
-            grid = build_grid(feat)
-            vis = plt.cm.viridis(grid)[:, :, :3]
+            vis = plt.cm.viridis(build_grid(feat))[:, :, :3]
             
         return img_np, vis
 
-    if layer_name.startswith('fc'):
-        update_hooks(model, activation, fc_layers)
-    else:
-        update_hooks(model, activation, [layer_name])
+    layer_lst = fc_layers if layer_name.startswith('fc') else [layer_name]
+    update_hooks(model, activation, layer_lst)
     
     fig, axs = plt.subplots(1, 2, figsize=(10, 5))
     for ax, im in zip(axs, forward(img)):

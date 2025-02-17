@@ -57,5 +57,5 @@ def get_device():
     else:
         device = torch.device('cpu')
     
-    print(f"Selected device: {device}")
+    print(f"Device selected: {device}")
     return device

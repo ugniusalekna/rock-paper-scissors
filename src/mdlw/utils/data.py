@@ -23,7 +23,7 @@ def get_cls_from_path(img_path):
 
 
 def make_class_map(root_dir):
-    return {cls_name: idx for idx, cls_name in enumerate(os.listdir(root_dir))}
+    return {cls_name: idx for idx, cls_name in enumerate(sorted(os.listdir(root_dir)))}
 
 
 def reverse_class_map(class_map):

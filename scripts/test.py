@@ -3,7 +3,7 @@ import cv2 as cv
 
 from mdlw.inference import InferenceModel
 from mdlw.utils.data import make_class_map
-from mdlw.utils.capture import video_capture, crop_square, draw_text, draw_hist
+from mdlw.utils.capture import video_capture, crop_square, draw_text
 
 
 def parse_args():
@@ -27,11 +27,10 @@ def main():
             frame = crop_square(frame)
             display_frame = cv.flip(frame.copy(), 1)
             
-            prediction, probs = model.predict(frame, return_prob=True)
+            pred, prob = model.predict(frame, return_prob=True)
             draw_text(display_frame, text="Press 'q' to quit", font_scale=1.0, pos=(10, 40))
-            draw_text(display_frame, text=f"Prediction: {prediction}", font_scale=1.0, pos=(10, 80))
-            # draw_hist(display_frame, probs, class_map, pos=(495, 10), height=80)
-    
+            draw_text(display_frame, text=f"Prediction: {pred}; Probability: {prob:.2f}", font_scale=1.0, pos=(10, 80))
+
             cv.imshow('Inference', display_frame)
             if cv.waitKey(1) & 0xFF == ord('q'):
                 break
