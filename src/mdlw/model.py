@@ -79,6 +79,6 @@ class ImageClassifierV4(nn.Module):
         x = F.max_pool2d(x, 2)
         x = F.gelu(self.bn6(self.conv6(x)))
 
-        x = F.max_pool2d(x, 3)
+        x = F.adaptive_avg_pool2d(x, (1, 1))
         x = x.flatten(1)
         return self.fc(x)

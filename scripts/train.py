@@ -5,7 +5,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from mdlw.augment import Augmenter
 from mdlw.dataset import ImageDataset
-from mdlw.model import ImageClassifier as ImageClassifier
+from mdlw.model import ImageClassifierV4 as ImageClassifier
 from mdlw.engine import Trainer, Validator, Exporter
 from mdlw.utils.data import get_image_paths, make_class_map, train_val_split
 from mdlw.utils.misc import load_cfg, get_device, initialize_run_dir, save_cfg
@@ -20,12 +20,12 @@ def main():
     train_img_paths, val_img_paths = train_val_split(img_paths, val_ratio=cfg.val_ratio, seed=cfg.seed)
 
     train_dataset = ImageDataset(
-        img_paths=train_img_paths, 
+        image_paths=train_img_paths, 
         class_map=class_map, 
         transform=Augmenter(train=True, image_size=cfg.image_size), 
     )
     val_dataset = ImageDataset(
-        img_paths=val_img_paths,
+        image_paths=val_img_paths,
         class_map=class_map,
         transform=Augmenter(train=False, image_size=cfg.image_size), 
     )

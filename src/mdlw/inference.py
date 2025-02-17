@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
 import onnxruntime as ort
+from .utils.data import reverse_class_map
 
 
 class InferenceModel:
@@ -10,7 +11,7 @@ class InferenceModel:
         self.output_name = self.session.get_outputs()[0].name
         self.input_shape = self.session.get_inputs()[0].shape
         self.image_size = self.input_shape[-2:]
-        self.reverse_class_map = {v: k for k, v in class_map.items()}
+        self.reversed_map = reverse_class_map(class_map)
 
     def preprocess(self, frame):
         frame = cv.resize(frame, self.image_size)
@@ -19,11 +20,11 @@ class InferenceModel:
         frame = np.expand_dims(frame, axis=0)
         return frame
     
-    def predict(self, frame, return_prob=False):
+    def __call__(self, frame, return_prob=False):
         frame = self.preprocess(frame)
         (logits,) = self.session.run([self.output_name], {self.input_name: frame})[0]
         class_idx = np.argmax(logits)
         if return_prob:
             probs = np.exp(logits - np.max(logits)) / np.sum(np.exp(logits - np.max(logits)))
-            return self.reverse_class_map[class_idx], probs[class_idx]
-        return self.reverse_class_map[class_idx]
+            return self.reversed_map[class_idx], probs[class_idx]
+        return self.reversed_map[class_idx]

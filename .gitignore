@@ -15,3 +15,6 @@ runs/
 # Jupyter
 data_manip.ipynb
 sketchbook.ipynb
+
+# Execute
+jobs.txt
