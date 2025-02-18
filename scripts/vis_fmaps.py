@@ -125,7 +125,7 @@ def run_draw_mode(cfg, device, model, reversed_map, layers, fc_layers, activatio
         draw_text(output, text="'j','l' change layers, 'k' toggle act, 'space' pause, 'q' quit;", font_scale=1.0)
         draw_text(output, text="'c': clear; 'w/s': change brush size; 'e': toggle erase;", font_scale=1.0, pos=(10, 80))
         draw_text(output, text=f"Prediction: {pred}; Probability: {prob:.2f}", font_scale=1.0, pos=(10, 130))
-        draw_text(output, text=f"Brush size: {brush_size}; Erase: {'ON' if erase_mode else 'OFF'}", font_scale=1.0, pos=(10, 180))
+        draw_text(output, text=f"Brush size: {brush_size}; Eraser: {'ON' if erase_mode else 'OFF'}", font_scale=1.0, pos=(10, 180))
         cv.imshow(window_name, output)
         key = cv.waitKey(1) & 0xFF
         if key == ord('q'):
