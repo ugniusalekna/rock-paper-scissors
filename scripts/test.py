@@ -63,7 +63,7 @@ def run_draw_mode(model, canvas_size=1024):
         pred, prob = model(frame, return_prob=True)
         draw_text(frame, text="Press 'q' to quit; 'c' to clear", font_scale=1.0, pos=(10, 30))
         draw_text(frame, text=f"Prediction: {pred}; Probability: {prob:.2f}", font_scale=1.0, pos=(10, 80))
-        draw_text(frame, text=f"Brush size: {brush_size}; Erase: {'ON' if erase_mode else 'OFF'}", font_scale=1.0, pos=(10, 130))
+        draw_text(frame, text=f"Brush size: {brush_size}; Eraser: {'ON' if erase_mode else 'OFF'}", font_scale=1.0, pos=(10, 130))
         cv.imshow(window_name, frame)
         key = cv.waitKey(1) & 0xFF
         if key == ord('q'):
@@ -76,6 +76,7 @@ def run_draw_mode(model, canvas_size=1024):
             brush_size = max(1, brush_size - 1)
         elif key == ord('e'):
             erase_mode = not erase_mode
+    cv.destroyAllWindows()
 
 
 def main():
@@ -87,8 +88,6 @@ def main():
         run_stream_mode(model)
     elif args.mode == 'draw':
         run_draw_mode(model)
-        
-    cv.destroyAllWindows()
 
 
 if __name__ == '__main__':

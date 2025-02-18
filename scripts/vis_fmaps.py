@@ -74,7 +74,7 @@ def run_stream_mode(cfg, device, model, reversed_map, layers, fc_layers, activat
                                                    layers, fc_layers, activation, current_idx, use_act)
             draw_text(output, text="'j','l' change layers, 'k' toggle act, 'space' pause, 'q' quit.", font_scale=1.0)
             draw_text(output, text=f"Prediction: {pred}; Probability: {prob:.2f}", font_scale=1.0, pos=(10, 80))
-            cv.imshow("Feature Visualization", output)
+            cv.imshow("Feature visualization", output)
             key = cv.waitKey(1) & 0xFF
             if key == ord('q'):
                 break
@@ -114,7 +114,7 @@ def run_draw_mode(cfg, device, model, reversed_map, layers, fc_layers, activatio
         elif event == cv.EVENT_LBUTTONUP:
             drawing = False
 
-    window_name = "Feature Visualization"
+    window_name = "Feature visualization"
     cv.namedWindow(window_name)
     cv.setMouseCallback(window_name, draw_callback)
 
@@ -148,6 +148,7 @@ def run_draw_mode(cfg, device, model, reversed_map, layers, fc_layers, activatio
             update_hooks(model, activation, hook_layers)
         elif key == ord('k'):
             use_act = not use_act
+    cv.destroyAllWindows()
 
 
 def main():
@@ -157,7 +158,6 @@ def main():
         run_stream_mode(cfg, device, model, reversed_map, layers, fc_layers, activation)
     elif args.mode == 'draw':
         run_draw_mode(cfg, device, model, reversed_map, layers, fc_layers, activation)
-    cv.destroyAllWindows()
 
 
 if __name__ == '__main__':
